@@ -25,7 +25,7 @@ def convert(src_path, dst_path):
 
 
 if __name__ == "__main__":
-    src = sys.argv[1] if len(sys.argv) > 1 else "program_var19.txt"
+    src = sys.argv[1] if len(sys.argv) > 1 else "program_var12.txt"
     dst = sys.argv[2] if len(sys.argv) > 2 else "program.mem"
     out = convert(src, dst)
     print(f"OK: {len(out)} инструкций -> {dst}")
