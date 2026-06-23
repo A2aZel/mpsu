@@ -6,12 +6,20 @@
 # Запуск (git bash):  ./build.sh
 set -euo pipefail
 
-# Путь к каталогу bin кросс-компилятора. Поменяйте при необходимости.
-CC_DIR="${CC_DIR:-/c/riscv_cc/bin}"
-GPP="${CC_DIR}/riscv-none-elf-g++"
-GCC="${CC_DIR}/riscv-none-elf-gcc"
-OBJCOPY="${CC_DIR}/riscv-none-elf-objcopy"
-OBJDUMP="${CC_DIR}/riscv-none-elf-objdump"
+# Префикс тулчейна (поменяйте под свой):
+#   riscv-none-elf-          (xpack)
+#   riscv64-unknown-elf-     (типичный на Linux-серверах, работает с -march=rv32i)
+#   riscv32-unknown-elf-     (если установлен 32-битный вариант)
+CROSS="${CROSS:-riscv-none-elf-}"
+
+# Каталог bin тулчейна. Если он уже в PATH — оставьте CC_DIR пустым.
+CC_DIR="${CC_DIR:-}"
+if [ -n "${CC_DIR}" ]; then PFX="${CC_DIR}/${CROSS}"; else PFX="${CROSS}"; fi
+
+GPP="${PFX}g++"
+GCC="${PFX}gcc"
+OBJCOPY="${PFX}objcopy"
+OBJDUMP="${PFX}objdump"
 
 ARCH="-march=rv32i_zicsr -mabi=ilp32"
 
