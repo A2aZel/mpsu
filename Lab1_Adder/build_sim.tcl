@@ -2,6 +2,8 @@
 # Запуск из Tcl Console Vivado:  source <путь>/Lab1_Adder/build_sim.tcl
 # По умолчанию симулируется 32-битный сумматор. Чтобы проверить другие,
 # смени sim_top на lab_01_tb_fulladder или lab_01_tb_fulladder4 и пересоздай.
+catch {close_sim}
+catch {close_project}
 set script_dir [file dirname [file normalize [info script]]]
 set proj_name  "sim_proj"
 set part       "xc7a100tcsg324-1"

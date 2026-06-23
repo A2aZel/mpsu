@@ -8,6 +8,8 @@
 # Без него симуляция запустится, но процессор выполнит пустую/неверную программу.
 #
 # Запуск из Tcl Console Vivado:  source <путь>/Lab8_Programming/build_sim.tcl
+catch {close_sim}
+catch {close_project}
 set script_dir [file dirname [file normalize [info script]]]
 set lab7_dir   [file normalize [file join $script_dir .. Lab7_Peripherals]]
 set proj_name  "sim_proj"

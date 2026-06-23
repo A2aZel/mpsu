@@ -1,5 +1,7 @@
 # Авто-сборка проекта симуляции для Nexys A7-100T (xc7a100tcsg324-1).
 # Запуск из Tcl Console Vivado:  source <путь>/Lab5_Decoder/build_sim.tcl
+catch {close_sim}
+catch {close_project}
 set script_dir [file dirname [file normalize [info script]]]
 set proj_name  "sim_proj"
 set part       "xc7a100tcsg324-1"
