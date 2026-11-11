@@ -13,7 +13,8 @@ set demo_wave_sections [list \
         [list alu_op bin] [list alu_result hex] [list alu_flag bin]]] \
     [list {4. Register write and visible result} [list \
         [list WS bin] [list we bin] [list WA unsigned] [list write_data hex] \
-        [list r1 hex] [list r2 hex] [list r4 unsigned] [list r6 hex] [list out hex]]]]
+        [list r1 hex] [list r2 hex] [list r4 unsigned] [list r6 hex] \
+        [list expected_result hex] [list out hex]]]]
 
 foreach section $demo_wave_sections {
     foreach spec [lindex $section 1] {

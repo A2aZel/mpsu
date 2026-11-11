@@ -112,7 +112,8 @@ PC выбирает команду из ПЗУ. Команда задаёт, к�
   `alu.sv`, `alu_opcodes_pkg.sv` — ЛР2; `instr_mem.sv`, `register_file.sv`,
   `memory_pkg.sv` — ЛР3.
 - [walkthrough/](walkthrough/README.md) — переносимые `setup_gui.tcl`,
-  `wave_demo.tcl`, `tb_lab4_demo.sv`; наглядная демонстрация одного входа `03B8`.
+  `wave_demo.tcl`, `tb_lab4_demo.sv`; наглядная проверка выбранного входа
+  (по умолчанию `03B8`) с автоматическим вычислением ожидаемого результата.
 - [tests/tb_lab4_selfcheck.sv](tests/tb_lab4_selfcheck.sv) — отдельная самопроверка
   ядра и программ; top `tb_lab4_selfcheck`.
 - [cyberconvert.py](cyberconvert.py), [tests/test_cyberconvert.py](tests/test_cyberconvert.py)
@@ -135,8 +136,13 @@ source {/path/to/mpsu/Lab4_CYBERcobra/walkthrough/setup_gui.tcl}
 simulation top `tb_lab4_demo` и начальное время симуляции **0 ns**.
 
 Порядок: **Run Behavioral Simulation → `source $wave_script` → Run For 100 ns →
-Run All → Zoom Fit**. Ожидаются `DEMO_PASS`, `checks=43`, `test_pass=1`,
+Run All → Zoom Fit**. Для исходного `sw=03B8` ожидаются `DEMO_PASS`, `checks=43`, `test_pass=1`,
 `pc=0000002C`, `out=00000014`; демонстрация завершается в **850 ns**.
+Чтобы проверить другое число, измените только значение в строке
+`logic [15:0] sw = 16'h03b8;` файла `tb_lab4_demo.sv`, сохраните файл и нажмите
+**Relaunch Simulation**. Ожидания подстроятся автоматически; максимальное время
+для 16-битного входа — **2170 ns**. Сигнал `expected_result` на волнах показывает
+ожидаемый ответ, `test_pass=1` — успешное завершение всех проверок.
 Затем **Close Simulation → RTL Analysis → Open Elaborated Design → dut → Schematic**.
 Подробные контрольные точки и порядок показа — в [walkthrough/README.md](walkthrough/README.md).
 
@@ -167,8 +173,8 @@ exhaustive — все 65 536 значений SW и 9 дополнительны
 Icarus Verilog и **Vivado/XSim 2023.1**: в каждом режиме 65 545 запусков программы,
 196 659 проверок, `test_pass=1`, `LAB4_SELF_CHECK=PASS`. Конвертер прошёл 8 тестов.
 Это результаты подготовленного комплекта; новый checkout и GUI-сеанс не выдаются
-за повторный полный прогон XSim. Демонстрационный `tb_lab4_demo` локально прошёл
-**43 проверки в Icarus**; фактический сеанс с GUI-помощниками пока не проверен.
+за повторный полный прогон XSim. Проверки изменяемого входа демонстрационного
+`tb_lab4_demo` описаны в [walkthrough/README.md](walkthrough/README.md).
 
 Ранее собран default32-битстрим: 820/820 сетей трассированы, routing errors — 0.
 Для ограниченного системного такта 100 МГц: WNS +6.222 ns, WHS +0.140 ns.
