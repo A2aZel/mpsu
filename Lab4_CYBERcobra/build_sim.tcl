@@ -1,34 +1,32 @@
-# Авто-сборка проекта симуляции для Nexys A7-100T (xc7a100tcsg324-1).
-# Запуск из Tcl Console Vivado:  source <путь>/Lab4_CYBERcobra/build_sim.tcl
-catch {close_sim}
-catch {close_project}
+# Usage: vivado -mode batch -nojournal -nolog -source build_sim.tcl -tclargs default directed
 set script_dir [file dirname [file normalize [info script]]]
-set proj_name  "sim_proj"
-set part       "xc7a100tcsg324-1"
-set sim_top    "lab_04_tb_CYBERcobra"
-
-set proj_dir [file join $script_dir $proj_name]
-file delete -force $proj_dir
-create_project $proj_name $proj_dir -part $part -force
-
-set design {}
-foreach f [glob -nocomplain -directory $script_dir *.sv] {
-  if {[string match "*tb_*" [file tail $f]]} continue
-  lappend design $f
+source [file join $script_dir lab4_common.tcl]
+set program_mode default
+set coverage_mode directed
+if {$argc > 0} { set program_mode [lindex $argv 0] }
+if {$argc > 1} { set coverage_mode [lindex $argv 1] }
+if {$argc > 2 || $coverage_mode ni {directed exhaustive}} {
+    error "Usage: build_sim.tcl default|low16 directed|exhaustive"
 }
-if {[llength $design]} { add_files $design }
-
-set mems [glob -nocomplain -directory $script_dir *.mem]
-if {[llength $mems]} { add_files $mems }
-
-set tbs [glob -nocomplain -directory $script_dir *tb_*.sv]
-if {[llength $tbs]} { add_files -fileset sim_1 $tbs }
-if {[llength $mems]} { add_files -fileset sim_1 $mems }
-
-set_property top $sim_top [get_filesets sim_1]
-update_compile_order -fileset sources_1
+set build_dir [lab4::prepare sim $program_mode]
+set testbench [file join $script_dir tests tb_lab4_selfcheck.sv]
+if {![file isfile $testbench]} { error "Missing testbench: $testbench" }
+add_files -fileset sim_1 -norecurse [list $testbench]
+set_property top CYBERcobra [get_filesets sources_1]
+set_property top tb_lab4_selfcheck [get_filesets sim_1]
+set_property xsim.elaborate.debug_level typical [get_filesets sim_1]
+set_property xsim.simulate.runtime 0ns [get_filesets sim_1]
+set plusargs {}
+if {$program_mode eq "low16"} { lappend plusargs -testplusarg LOW16=1 }
+if {$coverage_mode eq "exhaustive"} { lappend plusargs -testplusarg EXHAUSTIVE=1 }
+set_property -dict [list xsim.simulate.xsim.more_options $plusargs] [get_filesets sim_1]
 update_compile_order -fileset sim_1
-
-launch_simulation
+launch_simulation -simset sim_1 -mode behavioral
 run all
-puts "=== Симуляция $sim_top запущена. Смотри Tcl Console и окно Waveform. ==="
+set passed [get_value -radix unsigned /tb_lab4_selfcheck/test_pass]
+if {$passed ne "1"} { error "Self-check did not report test_pass=1. Inspect xsim.log and waveform." }
+puts "LAB4_SELF_CHECK=PASS"
+puts "LAB4_SIMULATION_DIRECTORY=$build_dir"
+# Only the project/simulation created by this script is closed.
+close_sim
+close_project

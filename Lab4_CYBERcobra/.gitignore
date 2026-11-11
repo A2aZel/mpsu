@@ -1,0 +1,36 @@
+# Local batch and GUI build directories
+/build/
+/walkthrough/gui_build/
+
+# Vivado projects, generated outputs, and caches
+.Xil/
+*.cache/
+*.gen/
+*.hw/
+*.ip_user_files/
+*.runs/
+*.sim/
+*.srcs/
+*.xpr
+*.dcp
+*.bit
+*.ltx
+*.jou
+*.log
+*.pb
+*.rpt
+*.str
+*.rst
+webtalk*
+
+# Simulator outputs
+xsim.dir/
+xsim.covdb/
+*.wdb
+*.vcd
+*.vvp
+
+# Python caches
+__pycache__/
+*.py[cod]
+.pytest_cache/

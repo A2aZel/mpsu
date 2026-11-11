@@ -71,7 +71,7 @@ module CYBERcobra (
     case (WS)
       2'd0:    write_data = const_se;            // константа из инструкции
       2'd1:    write_data = alu_result;          // результат АЛУ
-      2'd2:    write_data = {16'b0, sw_i};       // данные с внешнего устройства
+      2'd2:    write_data = {{16{sw_i[15]}}, sw_i}; // знаковое расширение SE16→32
       default: write_data = 32'b0;
     endcase
   end

@@ -14,6 +14,8 @@ cd ~/Desktop/mpsu && git pull
 ## 1. Запуск симуляции (Tcl Console в Vivado)
 Всё в одном окне, по очереди. Скрипт сам закрывает предыдущий проект.
 Путь подставлен под сервер `/home/pin_31_12/...` — поправь, если другой.
+Для **ЛР4** порядок отдельный: свежая Vivado без открытого проекта и переносимый
+GUI-помощник; подробности ниже.
 
 ```tcl
 source /home/pin_31_12/Desktop/mpsu/Lab1_Adder/build_sim.tcl
@@ -25,7 +27,7 @@ source /home/pin_31_12/Desktop/mpsu/Lab2_ALU/build_sim.tcl
 source /home/pin_31_12/Desktop/mpsu/Lab3_Memory/build_sim.tcl
 ```
 ```tcl
-source /home/pin_31_12/Desktop/mpsu/Lab4_CYBERcobra/build_sim.tcl
+source {/path/to/mpsu/Lab4_CYBERcobra/walkthrough/setup_gui.tcl}
 ```
 ```tcl
 source /home/pin_31_12/Desktop/mpsu/Lab5_Decoder/build_sim.tcl
@@ -40,13 +42,38 @@ source /home/pin_31_12/Desktop/mpsu/Lab7_Peripherals/build_sim.tcl
 source /home/pin_31_12/Desktop/mpsu/Lab8_Programming/build_sim.tcl
 ```
 
+### ЛР4 — наглядная симуляция для защиты
+
+В команде ЛР4 выше замените путь на свой, сохранив фигурные скобки для пробелов.
+Помощник создаёт отдельный проект: hardware top `nexys_CYBERcobra`, simulation top
+`tb_lab4_demo`, начальное время **0 ns**. Затем **Run Behavioral Simulation**, в
+Tcl Console — `source $wave_script`, **Run For 100 ns → Run All → Zoom Fit**.
+Для `SW=03B8` ожидаются `DEMO_PASS`, `checks=43`, `test_pass=1`, `pc=2C`, `out=14`;
+35 обычных фронтов после сброса, завершение в 850 ns.
+
+После **Close Simulation** откройте **RTL Analysis → Open Elaborated Design →
+dut: CYBERcobra → Schematic**. Пошаговое объяснение — в
+[Lab4_CYBERcobra/walkthrough/README.md](Lab4_CYBERcobra/walkthrough/README.md).
+GUI-сеанс с помощниками пока не проверен; TB прошёл 43 локальные проверки Icarus.
+
+Полный тест ЛР4 запускайте в **отдельном терминале**, из `Lab4_CYBERcobra`:
+
+```bash
+vivado -mode batch -nojournal -nolog -source build_sim.tcl -tclargs default exhaustive
+```
+
+Для low16 замените `default` на `low16`; ожидается `LAB4_SELF_CHECK=PASS`.
+Не выполняйте `source build_sim.tcl` для ЛР4 в GUI: это batch-сценарий для
+собственного проекта, который отказывается работать при открытом проекте.
+Контракт default32/low16 и границы проверки — в [README ЛР4](Lab4_CYBERcobra/README.md).
+
 ## 2. Что считать успехом (по каждой лабе)
 | Лаба | Top-тестбенч | Признак успеха |
 |------|--------------|----------------|
 | Lab1_Adder | `lab_01_tb_fulladder32` | завершился без ошибок |
 | Lab2_ALU | `lab_02_tb_alu` | `Number of errors: 0` |
 | Lab3_Memory | `lab_03_tb_register_file` | `Number of errors: 0` (и `err_count = 0`) |
-| Lab4_CYBERcobra | `lab_04_tb_CYBERcobra` | `The test is over` |
+| Lab4_CYBERcobra | GUI: `tb_lab4_demo`; полный тест: `tb_lab4_selfcheck` | GUI: `DEMO_PASS`, 43 проверки; batch: `LAB4_SELF_CHECK=PASS`, `test_pass=1` |
 | Lab5_Decoder | `lab_05_tb_decoder` | `Number of errors: 0` |
 | Lab6_Processor | `lab_11_tb_processor_system` | `$finish` на строке 45 («The test is over»), НЕ watchdog. У DUT нет выходов — пустая волна (только clk/rst) это норма |
 | Lab7_Peripherals | `lab_13_tb_processor_system` | отработал все 4 ms; на волне `led_o` меняется вслед за `sw_i` |
